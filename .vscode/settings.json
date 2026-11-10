@@ -1,0 +1,32 @@
+{
+  "github.copilot.chat.localeOverride": "ja",
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Write the commit message in English: an imperative subject line of 72 characters or less, optionally followed by a short body."
+    }
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "text": "PR のタイトルは英語、説明は日本語で、.github/pull_request_template.md の見出しに沿って書く。"
+    }
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "/^npm (test|run (test|test:coverage|lint|typecheck))(\\s|$)/": true,
+    "/^git (status|diff|branch --show-current)(\\s|$)/": true,
+    "/^gh stack view --json$/": true
+  },
+  "githubPullRequests.upstreamRemote": "never",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "search.exclude": {
+    "coverage": true,
+    "dist": true,
+    "public/js": true
+  }
+}

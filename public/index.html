@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bean &amp; Byte Café | ご注文</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>☕ Bean &amp; Byte Café</h1>
+      <p class="tagline">コードとコーヒーのある午後を。</p>
+    </header>
+
+    <main class="layout">
+      <section class="menu-section" aria-labelledby="menu-heading">
+        <h2 id="menu-heading">メニュー</h2>
+        <div id="menu" class="menu-grid" aria-live="polite">
+          <p class="muted">読み込み中…</p>
+        </div>
+      </section>
+
+      <aside class="order-panel" aria-labelledby="order-heading">
+        <h2 id="order-heading">ご注文</h2>
+        <ul id="order-lines" class="order-lines"></ul>
+        <dl id="order-totals" class="totals"></dl>
+        <form id="order-form" class="order-form">
+          <button id="submit-order" type="submit" class="primary" disabled>注文する</button>
+        </form>
+        <p id="order-error" class="error" role="alert" hidden></p>
+        <div id="order-receipt" class="receipt" aria-live="polite"></div>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <p>GitHub Copilot ハンズオン用のサンプルアプリです（データはメモリ上にのみ保存されます）。</p>
+    </footer>
+  </body>
+</html>

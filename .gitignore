@@ -1,0 +1,21 @@
+# 依存パッケージ
+node_modules/
+
+# ビルド成果物
+dist/
+public/js/
+
+# テスト
+coverage/
+
+# ローカル環境
+.env
+.env.*
+.dev.pid
+*.log
+.DS_Store
+Thumbs.db
+
+# ローカル専用のドキュメント（公開しない）
+docs/admin/
+docs/02-facilitator-guide.md

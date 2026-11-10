@@ -1,0 +1,47 @@
+# Bean & Byte Café API の動作確認用（VS Code 拡張機能「REST Client」）
+# 使い方: npm run dev でサーバーを起動し、各リクエストの上の「Send Request」をクリックします。
+
+@baseUrl = http://localhost:3000
+
+### ヘルスチェック
+GET {{baseUrl}}/health
+
+### メニュー一覧
+GET {{baseUrl}}/api/products
+
+### メニュー 1 件
+GET {{baseUrl}}/api/products/latte
+
+### 注文する（カフェラテ ×2、クロワッサン ×1）
+# @name createOrder
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": "latte", "quantity": 2 },
+    { "productId": "croissant", "quantity": 1 }
+  ]
+}
+
+### 作成した注文を取得する（直前の「注文する」の結果を使う）
+GET {{baseUrl}}/api/orders/{{createOrder.response.body.id}}
+
+### エラー例: 数量が 0 → 400 VALIDATION_ERROR
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [{ "productId": "latte", "quantity": 0 }]
+}
+
+### エラー例: メニューにない商品 → 400 PRODUCT_NOT_FOUND
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [{ "productId": "espresso", "quantity": 1 }]
+}
+
+### エラー例: 存在しない注文 → 404 ORDER_NOT_FOUND
+GET {{baseUrl}}/api/orders/ORD-9999
