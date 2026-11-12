@@ -318,7 +318,7 @@ h2 {
     linear-gradient(#e78b58 0 0),
     linear-gradient(#78b7c5 0 0);
   background-size: 9px 14px, 8px 12px, 10px 15px, 8px 13px, 9px 12px, 10px 14px;
-  background-repeat: repeat;
+  background-repeat: no-repeat;
   background-position: 8vw 10vh, 24vw 38vh, 43vw 17vh, 61vw 31vh, 78vw 12vh, 93vw 42vh;
   transform: translateY(0) rotate(0);
 }
