@@ -167,8 +167,15 @@ orderForm.addEventListener('submit', async (event) => {
     invalidatePreview();
     state.couponMessage = '';
   } catch (error) {
-    state.error = errorMessage(toApiErrorBody(error));
-    invalidatePreview();
+    const apiError = toApiErrorBody(error);
+    state.error = errorMessage(apiError);
+    if (
+      apiError.code === 'COUPON_NOT_FOUND' ||
+      apiError.code === 'COUPON_EXPIRED' ||
+      apiError.code === 'COUPON_MINIMUM_NOT_MET'
+    ) {
+      invalidatePreview();
+    }
   } finally {
     state.submitting = false;
     render();
