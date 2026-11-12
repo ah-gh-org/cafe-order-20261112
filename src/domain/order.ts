@@ -12,6 +12,8 @@ export interface Order {
   id: string;
   items: OrderItem[];
   subtotal: Yen;
+  couponCode?: string | null;
+  discount?: Yen;
   total: Yen;
   createdAt: Date;
 }

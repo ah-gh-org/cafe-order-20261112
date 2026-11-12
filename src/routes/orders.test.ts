@@ -24,6 +24,8 @@ describe('POST /api/orders', () => {
         { productId: 'croissant', name: 'クロワッサン', unitPrice: 350, quantity: 1, lineTotal: 350 },
       ],
       subtotal: 1450,
+      couponCode: null,
+      discount: 0,
       total: 1450,
       createdAt: TEST_NOW,
     });
@@ -91,6 +93,66 @@ describe('POST /api/orders', () => {
         details: { productId: 'unknown' },
       },
     });
+    expect(repositories.orders.findById('ORD-0001')).toBeUndefined();
+  });
+
+  it('クーポン付き注文では正規化したコードと割引額を返す', async () => {
+    const { app } = createTestApp('2026-10-10T00:00:00+09:00');
+
+    const res = await request(app)
+      .post('/api/orders')
+      .send({
+        items: [
+          { productId: 'latte', quantity: 2 },
+          { productId: 'croissant', quantity: 1 },
+        ],
+        couponCode: ' welcome10 ',
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      subtotal: 1450,
+      couponCode: 'WELCOME10',
+      discount: 145,
+      total: 1305,
+    });
+  });
+});
+
+describe('POST /api/orders/preview', () => {
+  it('正規化したクーポンの見積もりを返し、注文を保存しない', async () => {
+    const { app, repositories } = createTestApp('2026-10-10T00:00:00+09:00');
+
+    const res = await request(app)
+      .post('/api/orders/preview')
+      .send({
+        items: [
+          { productId: 'latte', quantity: 2 },
+          { productId: 'croissant', quantity: 1 },
+        ],
+        couponCode: ' welcome10 ',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ subtotal: 1450, discount: 145, total: 1305 });
+    expect(repositories.orders.findById('ORD-0001')).toBeUndefined();
+  });
+
+  it.each([
+    ['未知のコード', 'UNKNOWN', '2026-10-10T00:00:00+09:00', 'COUPON_NOT_FOUND'],
+    ['開始前', 'WELCOME10', TEST_NOW, 'COUPON_EXPIRED'],
+    ['最低額未満', 'WELCOME10', '2026-10-10T00:00:00+09:00', 'COUPON_MINIMUM_NOT_MET'],
+  ])('%s は理由付きエラーを返し注文を保存しない', async (_label, couponCode, now, code) => {
+    const { app, repositories } = createTestApp(now);
+    const productId = code === 'COUPON_MINIMUM_NOT_MET' ? 'croissant' : 'latte';
+
+    const res = await request(app)
+      .post('/api/orders/preview')
+      .send({ items: [{ productId, quantity: 1 }], couponCode });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe(code);
+    expect(res.body.error.details).toMatchObject({ couponCode });
     expect(repositories.orders.findById('ORD-0001')).toBeUndefined();
   });
 });

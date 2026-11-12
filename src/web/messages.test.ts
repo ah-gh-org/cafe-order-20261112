@@ -6,6 +6,9 @@ describe('errorMessage', () => {
     ['VALIDATION_ERROR', '注文内容を確認してください'],
     ['PRODUCT_NOT_FOUND', 'メニューにない商品が含まれています'],
     ['NETWORK_ERROR', 'サーバーに接続できませんでした'],
+    ['COUPON_NOT_FOUND', 'クーポンコードが見つかりません'],
+    ['COUPON_EXPIRED', '有効期間外'],
+    ['COUPON_MINIMUM_NOT_MET', '小計1,000円以上'],
   ])('%s は日本語メッセージになる', (code, expected) => {
     expect(errorMessage({ code, message: '', details: {} })).toContain(expected);
   });

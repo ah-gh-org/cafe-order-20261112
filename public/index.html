@@ -12,6 +12,7 @@
     <script type="module" src="/js/main.js"></script>
   </head>
   <body>
+    <div id="coupon-confetti" class="coupon-confetti" aria-hidden="true"></div>
     <header class="site-header">
       <h1>☕ Bean &amp; Byte Café</h1>
       <p class="tagline">コードとコーヒーのある午後を。</p>
@@ -29,6 +30,14 @@
         <h2 id="order-heading">ご注文</h2>
         <ul id="order-lines" class="order-lines"></ul>
         <dl id="order-totals" class="totals"></dl>
+        <div class="coupon-controls">
+          <label for="coupon-code">クーポンコード</label>
+          <div class="coupon-input-row">
+            <input id="coupon-code" name="couponCode" type="text" autocomplete="off" placeholder="WELCOME10" />
+            <button id="apply-coupon" type="button" class="secondary" disabled>適用</button>
+          </div>
+          <p id="coupon-status" class="coupon-status" role="status" aria-live="polite"></p>
+        </div>
         <form id="order-form" class="order-form">
           <button id="submit-order" type="submit" class="primary" disabled>注文する</button>
         </form>

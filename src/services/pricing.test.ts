@@ -4,16 +4,18 @@ import { priceOrder } from './pricing.js';
 
 const latte: Product = { id: 'latte', name: 'カフェラテ', price: 550, category: 'drink' };
 const croissant: Product = { id: 'croissant', name: 'クロワッサン', price: 350, category: 'food' };
+const dripCoffee: Product = { id: 'drip-coffee', name: 'ドリップコーヒー', price: 400, category: 'drink' };
 
 describe('priceOrder', () => {
   it('明細がなければ小計・合計とも 0 円', () => {
-    expect(priceOrder([])).toEqual({ items: [], subtotal: 0, total: 0 });
+    expect(priceOrder([])).toEqual({ items: [], subtotal: 0, discount: 0, total: 0 });
   });
 
   it('1 明細なら商品と数量から注文明細を作り、小計・合計は明細金額と同じ', () => {
     expect(priceOrder([{ product: latte, quantity: 2 }])).toEqual({
       items: [{ productId: 'latte', name: 'カフェラテ', unitPrice: 550, quantity: 2, lineTotal: 1100 }],
       subtotal: 1100,
+      discount: 0,
       total: 1100,
     });
   });
@@ -26,7 +28,27 @@ describe('priceOrder', () => {
     expect(pricing.items.map((item) => item.productId)).toEqual(['latte', 'croissant']);
     expect(pricing.items.map((item) => item.lineTotal)).toEqual([1100, 350]);
     expect(pricing.subtotal).toBe(1450);
+    expect(pricing.discount).toBe(0);
     expect(pricing.total).toBe(1450);
+  });
+
+  it('1,450 円から 145 円を割り引く', () => {
+    const pricing = priceOrder(
+      [
+        { product: latte, quantity: 2 },
+        { product: croissant, quantity: 1 },
+      ],
+      145,
+    );
+    expect(pricing).toMatchObject({ subtotal: 1450, discount: 145, total: 1305 });
+  });
+
+  it('割引額が小計を超えても合計は 0 円を下回らない', () => {
+    expect(priceOrder([{ product: dripCoffee, quantity: 1 }], 500)).toMatchObject({
+      subtotal: 400,
+      discount: 400,
+      total: 0,
+    });
   });
 
   it.each([
@@ -36,6 +58,7 @@ describe('priceOrder', () => {
   ])('数量 $quantity → 明細金額 $lineTotal 円', ({ quantity, lineTotal }) => {
     const pricing = priceOrder([{ product: latte, quantity }]);
     expect(pricing.items[0]?.lineTotal).toBe(lineTotal);
+    expect(pricing.discount).toBe(0);
     expect(pricing.total).toBe(lineTotal);
   });
 

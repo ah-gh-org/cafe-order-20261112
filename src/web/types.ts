@@ -21,12 +21,26 @@ export interface OrderDto {
   id: string;
   items: OrderItemDto[];
   subtotal: number;
+  couponCode: string | null;
+  discount: number;
   total: number;
   createdAt: string;
 }
 
 export interface CreateOrderRequest {
   items: { productId: string; quantity: number }[];
+  couponCode?: string;
+}
+
+export interface PreviewOrderRequest {
+  items: { productId: string; quantity: number }[];
+  couponCode: string;
+}
+
+export interface OrderPreviewDto {
+  subtotal: number;
+  discount: number;
+  total: number;
 }
 
 export interface ApiErrorBody {

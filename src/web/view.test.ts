@@ -16,6 +16,8 @@ const order: OrderDto = {
   ],
   subtotal: 1450,
   total: 1450,
+  couponCode: null,
+  discount: 0,
   createdAt: '2026-04-01T01:00:00.000Z',
 };
 
@@ -76,6 +78,13 @@ describe('renderTotals', () => {
     const html = renderTotals({ subtotal: 1450, total: 1450 });
     expect(html).toContain('<dt>小計</dt><dd>¥1,450</dd>');
     expect(html).toContain('<dt>合計</dt><dd>¥1,450</dd>');
+    expect(html).not.toContain('割引');
+  });
+
+  it('見積もりの割引額を表示する', () => {
+    const html = renderTotals({ subtotal: 1450, discount: 145, total: 1305 });
+    expect(html).toContain('<dt>割引</dt><dd>−¥145</dd>');
+    expect(html).toContain('<dt>合計</dt><dd>¥1,305</dd>');
   });
 });
 
@@ -85,5 +94,15 @@ describe('renderReceipt', () => {
     expect(html).toContain('注文番号 <strong>ORD-0001</strong>');
     expect(html).toContain('<dt>小計</dt><dd>¥1,450</dd>');
     expect(html).toContain('<dt>合計</dt><dd>¥1,400</dd>');
+  });
+
+  it('クーポンコードと割引額をレシートに表示する', () => {
+    const html = renderReceipt({ ...order, couponCode: 'WELCOME10', discount: 145, total: 1305 });
+    expect(html).toContain('<dt>割引（WELCOME10）</dt><dd>−¥145</dd>');
+    expect(html).toContain('<dt>合計</dt><dd>¥1,305</dd>');
+  });
+
+  it('割引のないレシートには割引行を表示しない', () => {
+    expect(renderReceipt(order)).not.toContain('割引');
   });
 });

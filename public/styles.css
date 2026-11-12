@@ -197,6 +197,52 @@ h2 {
   gap: 0.75rem;
 }
 
+.coupon-controls {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.coupon-controls label {
+  font-weight: 700;
+}
+
+.coupon-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.coupon-input-row input {
+  min-width: 0;
+  flex: 1;
+  padding: 0.65rem;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.secondary {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--coffee);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--coffee-dark);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.coupon-status {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--ok);
+  font-size: 0.9rem;
+}
+
 .primary {
   width: 100%;
   padding: 0.8rem;
@@ -247,4 +293,71 @@ h2 {
   color: var(--muted);
   font-size: 0.85rem;
   padding: 2rem 1rem;
+}
+
+.coupon-confetti {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.coupon-confetti::before,
+.coupon-confetti::after {
+  content: "";
+  position: absolute;
+  inset: -100vh 0 auto;
+  height: 100vh;
+  opacity: 0;
+  background-image:
+    linear-gradient(var(--accent) 0 0),
+    linear-gradient(#e9b949 0 0),
+    linear-gradient(#5b9a75 0 0),
+    linear-gradient(#8e6db0 0 0),
+    linear-gradient(#e78b58 0 0),
+    linear-gradient(#78b7c5 0 0);
+  background-size: 9px 14px, 8px 12px, 10px 15px, 8px 13px, 9px 12px, 10px 14px;
+  background-repeat: repeat;
+  background-position: 8vw 10vh, 24vw 38vh, 43vw 17vh, 61vw 31vh, 78vw 12vh, 93vw 42vh;
+  transform: translateY(0) rotate(0);
+}
+
+.coupon-confetti::before {
+  background-size: 9px 14px, 8px 12px, 10px 15px, 8px 13px, 9px 12px, 10px 14px;
+}
+
+.coupon-confetti::after {
+  background-position: 17vw 20vh, 35vw 44vh, 54vw 9vh, 70vw 36vh, 86vw 18vh, 98vw 50vh;
+  background-size: 7px 12px, 10px 14px, 8px 12px, 9px 15px, 8px 13px, 10px 12px;
+}
+
+.coupon-confetti.is-active::before,
+.coupon-confetti.is-active::after {
+  animation: coupon-confetti-fall 1.6s ease-out forwards;
+}
+
+.coupon-confetti.is-active::after {
+  animation-delay: 0.12s;
+}
+
+@keyframes coupon-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(200vh) rotate(540deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coupon-confetti.is-active::before,
+  .coupon-confetti.is-active::after {
+    animation: none;
+  }
 }
