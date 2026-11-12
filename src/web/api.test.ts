@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ApiError, createOrder, fetchProducts, toApiErrorBody, type FetchLike } from './api.js';
+import { ApiError, createOrder, fetchProducts, previewOrder, toApiErrorBody, type FetchLike } from './api.js';
 
 function jsonResponse(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -29,6 +29,23 @@ describe('createOrder', () => {
     });
   });
 
+  it('適用済みクーポンコードを注文リクエストに含められる', async () => {
+    const fetchFn = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse(201, { id: 'ORD-0002', couponCode: 'WELCOME10', discount: 145 }),
+    );
+
+    await createOrder(
+      { items: [{ productId: 'latte', quantity: 2 }], couponCode: 'WELCOME10' },
+      fetchFn,
+    );
+
+    expect(fetchFn).toHaveBeenCalledWith('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"items":[{"productId":"latte","quantity":2}],"couponCode":"WELCOME10"}',
+    });
+  });
+
   it('エラーレスポンスは ApiError（コード付き）になる', async () => {
     const body = { error: { code: 'VALIDATION_ERROR', message: 'Request validation failed', details: { issues: [] } } };
     const fetchFn = vi.fn<FetchLike>().mockResolvedValue(jsonResponse(400, body));
@@ -55,6 +72,32 @@ describe('createOrder', () => {
       status: 0,
       body: { code: 'NETWORK_ERROR' },
     });
+  });
+});
+
+describe('previewOrder', () => {
+  it('POST /api/orders/preview に JSON を送り、見積もりを返す', async () => {
+    const preview = { subtotal: 1450, discount: 145, total: 1305 };
+    const request = { items: [{ productId: 'latte', quantity: 2 }], couponCode: 'WELCOME10' };
+    const fetchFn = vi.fn<FetchLike>().mockResolvedValue(jsonResponse(200, preview));
+
+    await expect(previewOrder(request, fetchFn)).resolves.toEqual(preview);
+    expect(fetchFn).toHaveBeenCalledWith('/api/orders/preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+    });
+  });
+
+  it('クーポンエラーを ApiError として伝播する', async () => {
+    const body = {
+      error: { code: 'COUPON_NOT_FOUND', message: 'Coupon not found', details: { couponCode: 'INVALID' } },
+    };
+    const fetchFn = vi.fn<FetchLike>().mockResolvedValue(jsonResponse(400, body));
+
+    await expect(
+      previewOrder({ items: [{ productId: 'latte', quantity: 1 }], couponCode: 'INVALID' }, fetchFn),
+    ).rejects.toMatchObject({ status: 400, body: body.error });
   });
 });
 

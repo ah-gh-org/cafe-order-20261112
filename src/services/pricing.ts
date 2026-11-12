@@ -12,13 +12,15 @@ export interface PricingLine {
 interface OrderPricing {
   items: OrderItem[];
   subtotal: Yen;
+  discount: Yen;
   total: Yen;
 }
 
-export function priceOrder(lines: readonly PricingLine[]): OrderPricing {
+export function priceOrder(lines: readonly PricingLine[], requestedDiscount: Yen = 0): OrderPricing {
   const items = lines.map(toOrderItem);
   const subtotal = sumYen(items.map((item) => item.lineTotal));
-  return { items, subtotal, total: subtotal };
+  const discount = Math.min(requestedDiscount, subtotal) as Yen;
+  return { items, subtotal, discount, total: (subtotal - discount) as Yen };
 }
 
 function toOrderItem({ product, quantity }: PricingLine): OrderItem {

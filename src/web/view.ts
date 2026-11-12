@@ -51,13 +51,20 @@ function renderLine(line: Pick<CartLine, 'name' | 'quantity' | 'lineTotal'>): st
 
 interface Totals {
   subtotal: number;
+  discount?: number;
   total: number;
+  couponCode?: string | null;
 }
 
 /** <dl> の中身として 小計・合計 を描画する。 */
-export function renderTotals({ subtotal, total }: Totals): string {
+export function renderTotals({ subtotal, discount = 0, total, couponCode }: Totals): string {
   return [
     `<div class="totals-row"><dt>小計</dt><dd>${formatYen(subtotal)}</dd></div>`,
+    ...(discount > 0
+      ? [
+          `<div class="totals-row"><dt>割引${couponCode ? `（${escapeHtml(couponCode)}）` : ''}</dt><dd>−${formatYen(discount)}</dd></div>`,
+        ]
+      : []),
     `<div class="totals-row grand-total"><dt>合計</dt><dd>${formatYen(total)}</dd></div>`,
   ].join('');
 }

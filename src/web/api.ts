@@ -1,4 +1,11 @@
-import type { ApiErrorBody, CreateOrderRequest, OrderDto, ProductDto } from './types.js';
+import type {
+  ApiErrorBody,
+  CreateOrderRequest,
+  OrderDto,
+  OrderPreviewDto,
+  PreviewOrderRequest,
+  ProductDto,
+} from './types.js';
 
 export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -20,6 +27,14 @@ export function fetchProducts(fetchFn: FetchLike = fetch): Promise<ProductDto[]>
 
 export function createOrder(request: CreateOrderRequest, fetchFn: FetchLike = fetch): Promise<OrderDto> {
   return requestJson<OrderDto>(fetchFn, '/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+}
+
+export function previewOrder(request: PreviewOrderRequest, fetchFn: FetchLike = fetch): Promise<OrderPreviewDto> {
+  return requestJson<OrderPreviewDto>(fetchFn, '/api/orders/preview', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
